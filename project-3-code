@@ -1,0 +1,157 @@
+let video;
+let label = 'waiting. . . '
+let classifier;
+let modelURL = 'https://teachablemachine.withgoogle.com/models/3v7-A07E/'
+
+function preload() {
+classifier = ml5.imageClassifier(modelURL + 'model.json');
+}
+
+var playerX = 50;
+var playerY = 430;
+var speed = 2;
+var enemy1X = 106;
+var enemy2X = 318;
+var enemy3X = 530;
+var enemy4Y = 80;
+var enemy5Y = 240;
+var enemy6Y = 400;
+var enemyY = 100;
+var enemyX = 640;
+var score;
+var gameover;
+var rectwidth = 106;
+var rectwidth2 = 80;
+var playerwidth = 28
+var playerspeed = 10
+
+
+function setup() {
+  createCanvas(640, 480);
+  video = createCapture(VIDEO);
+  video.hide();
+  classifyVideo();
+  score = 0;
+  gameover = false;
+}
+function classifyVideo(){
+  classifier.classify(video, gotResults);
+}
+function gotResults(error, results) {
+  if (error) {
+    console.error(error);
+    return;
+  }
+  label = results[0].label;
+  classifyVideo();
+}
+function draw() {
+  background(0);
+  image(video, 0,0);
+  textSize(32);
+  fill(255);
+  text(label, 10, 50);
+  
+  
+  if(gameover == false)
+  {
+  collision();
+  //player
+  fill(255);
+  rect(playerX, playerY, playerwidth, playerwidth);
+
+  // Enemies
+  fill(255, 255, 0);
+  rect(enemy1X, enemyY, rectwidth, rectwidth);
+  rect(enemy2X, enemyY, rectwidth, rectwidth);
+  rect(enemy3X, enemyY, rectwidth, rectwidth);
+  rect(enemyX, enemy4Y, rectwidth, rectwidth);
+  rect(enemyX, enemy5Y, rectwidth, rectwidth);
+  rect(enemyX, enemy6Y, rectwidth, rectwidth);
+  
+  enemyY += speed;
+  enemyX -= speed;
+  
+  
+  
+  //enemy at the bottom
+  if (enemyY >= height) {
+    enemyY = 0;
+    score += 1;
+    enemy1X = random(width);
+    enemy2X = random(width);
+    enemy3X = random(width);
+  }
+  if (enemyX <= 0) {
+    enemyX = 640;
+    score += 1;
+    enemy4Y = random(height);
+    enemy5Y = random(height);
+    enemy6Y = random(height);
+  }
+  //score
+  fill(255);
+  textSize(40);
+  text(score, width / 2, 100);
+    
+  } // END OF gameover == false
+  
+    if(gameover == true)
+  {
+  score = 0;
+  speed = 0;
+  background(0)
+  textSize(40);
+  fill(255, 0, 0);
+  text('Gameover', width / 4, height / 2);
+  
+  }
+  
+} // END OF FUNCTION DRAW
+
+function keyPressed() {
+  if (keyCode === LEFT_ARROW) {
+    playerX -= playerspeed;
+  }
+  if (keyCode === RIGHT_ARROW) {
+    playerX += playerspeed;
+  }
+  if (keyCode === UP_ARROW) {
+    playerY -= playerspeed;
+  }
+  if (keyCode === DOWN_ARROW) {
+    playerY += playerspeed;
+  }
+  if (playerX >= width) {
+    playerX = playerwidth;
+  }
+  if (playerX <= 0) {
+    playerX = width-playerwidth;
+  }
+  if (playerY >=height) {
+    playerY = playerwidth;
+  }
+  if (playerY <=0) {
+    playerY = height+playerwidth;
+  }
+}
+
+function collision() {
+  if (playerX >= enemy1X && playerX <= enemy1X + rectwidth && playerY >= enemyY && playerY <= enemyY + rectwidth) {
+    score = 0;
+    gameover = true;
+    //code
+  }
+
+  if (playerX >= enemy2X && playerX <= enemy2X + rectwidth && playerY >= enemyY && playerY <= enemyY + rectwidth) {
+    score = 0;
+     gameover = true;
+    //code
+  }
+
+  if (playerX >= enemy3X && playerX <= enemy3X + rectwidth && playerY >= enemyY && playerY <= enemyY + rectwidth) {
+    score = 0;
+     gameover = true;
+    //code
+  }
+}
